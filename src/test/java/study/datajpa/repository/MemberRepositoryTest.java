@@ -8,6 +8,7 @@ import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -220,8 +221,25 @@ class MemberRepositoryTest {
         //then
         assertThat(memberDtos.get(0).getTeamname()).isEqualTo("teamA");
         assertThat(memberDtos.get(1).getTeamname()).isEqualTo("teamA");
-
     }
 
+
+    @Test
+    void findByNamesTest() {
+        //given
+        Member memberA = new Member("memberA", 10, null);
+        Member memberB = new Member("memberB", 20, null);
+        memberRepository.save(memberA);
+        memberRepository.save(memberB);
+
+        //when
+        List<Member> members = memberRepository.findByNames(Arrays.asList("memberA", "memberB"));
+        for (Member member : members) {
+            System.out.println("member.getUsername() = " + member.getUsername());
+        }
+
+        //then
+        assertThat(members.size()).isEqualTo(2);
+    }
 
 }
