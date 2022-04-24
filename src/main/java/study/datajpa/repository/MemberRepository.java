@@ -3,6 +3,7 @@ package study.datajpa.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 
 import java.util.List;
@@ -28,7 +29,22 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query(name = "Member.findByUsernameNamedQuery")
     List<Member> findByUsernameNamedQuery(@Param("username") String username);
 
+    /**
+     * 직접 쿼리 사용
+     */
     @Query("select m from Member m where m.username = :username and m.age = :age")
     List<Member> findUser(@Param("username") String username, @Param("age") int age);
+
+    /**
+     * entity말고 그냥 쿼리 생성
+     */
+    @Query("select m.username from Member m")
+    List<String> findUsernameList();
+
+    /**
+     * dto로 쿼리생성 조회
+     */
+    @Query("select new study.datajpa.dto.MemberDto(m.id, m.username, t.name) from Member m join m.team t")
+    List<MemberDto> findMemberDto();
 
 }
