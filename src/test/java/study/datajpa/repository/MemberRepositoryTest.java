@@ -1,6 +1,5 @@
 package study.datajpa.repository;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,17 +8,15 @@ import study.datajpa.entity.Member;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
 class MemberRepositoryTest {
 
     @Autowired
-    MemberRepository repository;
+    MemberRepository memberRepository;
 
     @Test
     void save() {
@@ -27,10 +24,10 @@ class MemberRepositoryTest {
         Member member = new Member("memberA");
 
         //when
-        Member savedMember = repository.save(member);
+        Member savedMember = memberRepository.save(member);
 
         //then
-        Member findMember = repository.findById(savedMember.getId()).get();
+        Member findMember = memberRepository.findById(savedMember.getId()).get();
         assertThat(findMember.getId()).isEqualTo(savedMember.getId());
         assertThat(findMember.getUsername()).isEqualTo(savedMember.getUsername());
         assertThat(findMember).isEqualTo(member);
@@ -42,14 +39,14 @@ class MemberRepositoryTest {
         //given
         Member memberA = new Member("memberA", 10, null);
         Member memberB = new Member("memberB", 20, null);
-        repository.save(memberA);
-        repository.save(memberB);
+        memberRepository.save(memberA);
+        memberRepository.save(memberB);
 
         //when
-        repository.delete(memberA);
+        memberRepository.delete(memberA);
 
         //then
-        assertThatThrownBy(() -> repository.findById(memberA.getId()).get())
+        assertThatThrownBy(() -> memberRepository.findById(memberA.getId()).get())
                 .isInstanceOf(NoSuchElementException.class);
     }
 
@@ -58,14 +55,14 @@ class MemberRepositoryTest {
         //given
         Member memberA = new Member("memberA", 10, null);
         Member memberB = new Member("memberB", 20, null);
-        repository.save(memberA);
-        repository.save(memberB);
+        memberRepository.save(memberA);
+        memberRepository.save(memberB);
 
         //when
-        List<Member> resultList = repository.findAll();
+        List<Member> resultList = memberRepository.findAll();
 
         //then
-        long count = repository.count();
+        long count = memberRepository.count();
         assertThat(resultList.size()).isEqualTo(2);
         assertThat(resultList.size()).isEqualTo(count);
     }
@@ -75,11 +72,11 @@ class MemberRepositoryTest {
         //given
         Member memberA = new Member("memberA", 10, null);
         Member memberB = new Member("memberB", 20, null);
-        repository.save(memberA);
-        repository.save(memberB);
+        memberRepository.save(memberA);
+        memberRepository.save(memberB);
 
         //when
-        long count = repository.count();
+        long count = memberRepository.count();
 
         //then
         assertThat(count).isEqualTo(2);
@@ -89,10 +86,10 @@ class MemberRepositoryTest {
     void findById() {
         //given
         Member memberA = new Member("memberA", 10, null);
-        Member savedMember = repository.save(memberA);
+        Member savedMember = memberRepository.save(memberA);
 
         //when
-        Member findMember = repository.findById(memberA.getId()).get();
+        Member findMember = memberRepository.findById(memberA.getId()).get();
 
         //then
         assertThat(findMember).isEqualTo(savedMember);
@@ -104,15 +101,78 @@ class MemberRepositoryTest {
     void update() {
         //given
         Member memberA = new Member("memberA", 10, null);
-        Member savedMember = repository.save(memberA);
+        Member savedMember = memberRepository.save(memberA);
 
         //when
         savedMember.setUsername("memberB");
 
         //then
-        Member findMember = repository.findById(savedMember.getId()).get();
+        Member findMember = memberRepository.findById(savedMember.getId()).get();
         assertThat(findMember.getUsername()).isEqualTo(savedMember.getUsername());
         assertThat(findMember.getUsername()).isEqualTo("memberB");
+    }
+
+    @Test
+    void findByUsernameAndAgeGreaterThan() {
+        //given
+        Member memberA = new Member("member", 10, null);
+        Member memberB = new Member("member", 20, null);
+        memberRepository.save(memberA);
+        memberRepository.save(memberB);
+
+        //when
+        List<Member> member = memberRepository.findByUsernameAndAgeGreaterThan("member", 15);
+
+        //then
+        assertThat(member.get(0).getUsername()).isEqualTo("member");
+        assertThat(member.get(0).getAge()).isEqualTo(20);
+    }
+
+    @Test
+    void findHelloBy() {
+        //given
+        Member memberA = new Member("member", 10, null);
+        Member memberB = new Member("member", 20, null);
+        memberRepository.save(memberA);
+        memberRepository.save(memberB);
+
+        //when
+        List<Member> members = memberRepository.findHelloBy();
+
+        //then
+        assertThat(members.size()).isEqualTo(2);
+    }
+
+    @Test
+    void findByUsernameNamedQueryTest() {
+        //given
+        Member memberA = new Member("memberA", 10, null);
+        Member memberB = new Member("memberB", 20, null);
+        memberRepository.save(memberA);
+        memberRepository.save(memberB);
+
+        //when
+        List<Member> members = memberRepository.findByUsernameNamedQuery(memberA.getUsername());
+
+        //then
+        assertThat(members.get(0).getUsername()).isEqualTo("memberA");
+        assertThat(members.get(0).getAge()).isEqualTo(10);
+    }
+
+    @Test
+    void findUserTest() {
+        //given
+        Member memberA = new Member("memberA", 10, null);
+        Member memberB = new Member("memberB", 20, null);
+        memberRepository.save(memberA);
+        memberRepository.save(memberB);
+
+        //when
+        List<Member> members = memberRepository.findUser("memberA", 10);
+
+        //then
+        assertThat(members.get(0).getUsername()).isEqualTo("memberA");
+        assertThat(members.get(0).getAge()).isEqualTo(10);
     }
 
 }
