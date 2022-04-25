@@ -11,6 +11,7 @@ import study.datajpa.entity.Team;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -242,4 +243,61 @@ class MemberRepositoryTest {
         assertThat(members.size()).isEqualTo(2);
     }
 
+    @Test
+    void findListByUsername() {
+        //given
+        Member memberA = new Member("memberA", 10, null);
+        Member memberB = new Member("memberB", 20, null);
+        memberRepository.save(memberA);
+        memberRepository.save(memberB);
+
+        //when
+        List<Member> members = memberRepository.findListByUsername("memberA");
+        for (Member member : members) {
+            System.out.println("member.getUsername() = " + member.getUsername());
+        }
+
+        //결과값이 없을때 null이 아니다
+        List<Member> resultList = memberRepository.findListByUsername("memberAAA");
+        System.out.println("resultList = " + resultList);
+
+        //then
+        assertThat(members.get(0).getUsername()).isEqualTo("memberA");
+        assertThat(members.get(0)).isEqualTo(memberA);
+    }
+
+    @Test
+    void findMemberByUsername() {
+        //given
+        Member memberA = new Member("memberA", 10, null);
+        Member memberB = new Member("memberB", 20, null);
+        memberRepository.save(memberA);
+        memberRepository.save(memberB);
+
+        //when
+        Member member = memberRepository.findMemberByUsername("memberA");
+
+        //결과값이 없을때 null로 반환
+        Member result = memberRepository.findMemberByUsername("memberAAA");
+        System.out.println("result = " + result);
+
+        //then
+        assertThat(member.getUsername()).isEqualTo("memberA");
+        assertThat(member).isEqualTo(memberA);
+    }
+
+    @Test
+    void findOptionalByUsername() {
+        //given
+        Member memberA = new Member("memberA", 10, null);
+        Member memberB = new Member("memberB", 20, null);
+        memberRepository.save(memberA);
+        memberRepository.save(memberB);
+
+        //when
+        Optional<Member> member = memberRepository.findOptionalByUsername("memberA");
+
+        //then
+        assertThat(member.get()).isEqualTo("memberA");
+    }
 }
