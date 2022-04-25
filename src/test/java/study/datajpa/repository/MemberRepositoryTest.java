@@ -3,6 +3,10 @@ package study.datajpa.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
@@ -299,5 +303,75 @@ class MemberRepositoryTest {
 
         //then
         assertThat(member.get()).isEqualTo("memberA");
+    }
+
+    @Test
+    void pagingPage() {
+        //given
+        memberRepository.save(new Member("memeber1", 10, null));
+        memberRepository.save(new Member("memeber2", 10, null));
+        memberRepository.save(new Member("memeber3", 10, null));
+        memberRepository.save(new Member("memeber4", 10, null));
+        memberRepository.save(new Member("memeber5", 10, null));
+        memberRepository.save(new Member("memeber6", 15, null));
+        memberRepository.save(new Member("memeber7", 15, null));
+        memberRepository.save(new Member("memeber8", 15, null));
+        memberRepository.save(new Member("memeber9", 15, null));
+        memberRepository.save(new Member("memeber10", 15, null));
+
+        int age = 10;
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
+
+        //when
+        Page<Member> page = memberRepository.findByAge(age, pageRequest);
+        Page<MemberDto> toMap = page.map(member -> new MemberDto(member.getId(), member.getUsername(), null));
+
+        //then
+        List<Member> content = page.getContent();
+        for (Member member : content) {
+            System.out.println("member = " + member);
+        }
+
+        long totalElements = page.getTotalElements();
+        System.out.println("totalElements = " + totalElements);
+
+        assertThat(content.size()).isEqualTo(3);
+        assertThat(page.getTotalElements()).isEqualTo(5);
+        assertThat(page.getNumber()).isEqualTo(0);
+        assertThat(page.getTotalPages()).isEqualTo(2);
+        assertThat(page.isFirst()).isTrue();
+        assertThat(page.isLast()).isFalse();
+    }
+
+    @Test
+    void pagingSlice() {
+        //given
+        memberRepository.save(new Member("memeber", 10, null));
+        memberRepository.save(new Member("memeber", 10, null));
+        memberRepository.save(new Member("memeber", 10, null));
+        memberRepository.save(new Member("memeber", 10, null));
+        memberRepository.save(new Member("memeber", 10, null));
+        memberRepository.save(new Member("memeber", 15, null));
+        memberRepository.save(new Member("memeber", 15, null));
+        memberRepository.save(new Member("memeber", 15, null));
+        memberRepository.save(new Member("memeber", 15, null));
+        memberRepository.save(new Member("memeber", 15, null));
+
+        int age = 10;
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
+
+        //when
+        Slice<Member> page = memberRepository.getByAge(age, pageRequest);
+
+        //then
+        List<Member> content = page.getContent();
+        for (Member member : content) {
+            System.out.println("member = " + member);
+        }
+
+        assertThat(content.size()).isEqualTo(3);
+        assertThat(page.getNumber()).isEqualTo(0);
+        assertThat(page.isFirst()).isTrue();
+        assertThat(page.isLast()).isFalse();
     }
 }
