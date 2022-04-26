@@ -428,8 +428,36 @@ class MemberRepositoryTest {
             System.out.println("member.getTeam().getClass() = " + member.getTeam().getClass());
             System.out.println("member.getTeam().getName() = " + member.getTeam().getName());
         }
+    }
 
+    @Test
+    void queryHint() {
+        //given
+        Member member = new Member("memberA", 10);
+        memberRepository.save(member);
+        em.flush();
+        em.clear();
 
+        //when
+        //Member findMember = memberRepository.findById(member.getId()).get();
+        Member findMember = memberRepository.findReadOnlyById(member.getId());
+
+        findMember.setUsername("memberB");
+        em.flush();
+
+        //then
+    }
+
+    @Test
+    void lock() {
+        //given
+        Member member = new Member("memberA", 10);
+        memberRepository.save(member);
+        em.flush();
+        em.clear();
+
+        //when
+        List<Member> members = memberRepository.findLockByUsername("memberA");
 
     }
 
