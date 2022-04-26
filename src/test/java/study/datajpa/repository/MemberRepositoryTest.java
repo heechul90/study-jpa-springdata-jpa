@@ -12,6 +12,8 @@ import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -28,6 +30,9 @@ class MemberRepositoryTest {
 
     @Autowired
     TeamRepository teamRepository;
+
+    @PersistenceContext
+    EntityManager em;
 
     @Test
     void save() {
@@ -373,5 +378,30 @@ class MemberRepositoryTest {
         assertThat(page.getNumber()).isEqualTo(0);
         assertThat(page.isFirst()).isTrue();
         assertThat(page.isLast()).isFalse();
+    }
+
+    @Test
+    void bulkAgePlus() {
+        //given
+        memberRepository.save(new Member("memeber1", 10, null));
+        memberRepository.save(new Member("memeber2", 10, null));
+        memberRepository.save(new Member("memeber3", 10, null));
+        memberRepository.save(new Member("memeber4", 10, null));
+        memberRepository.save(new Member("memeber5", 10, null));
+        memberRepository.save(new Member("memeber6", 15, null));
+        memberRepository.save(new Member("memeber7", 15, null));
+        memberRepository.save(new Member("memeber8", 15, null));
+        memberRepository.save(new Member("memeber9", 15, null));
+        memberRepository.save(new Member("memeber10", 15, null));
+
+        //when
+        int resultCount = memberRepository.bulkAgePlus(14);
+
+        //영속성 컨텍스트를 무시하고 업데이트하기 때문에 영속성을 다 날려준다
+        //em.flush();
+        //em.clear(); //어노테이션에 옵션 넣어두어도 된다.
+
+        //then
+        assertThat(resultCount).isEqualTo(5);
     }
 }
