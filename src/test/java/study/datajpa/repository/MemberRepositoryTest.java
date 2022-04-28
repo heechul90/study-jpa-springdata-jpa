@@ -441,11 +441,10 @@ class MemberRepositoryTest {
         //when
         //Member findMember = memberRepository.findById(member.getId()).get();
         Member findMember = memberRepository.findReadOnlyById(member.getId());
-
         findMember.setUsername("memberB");
-        em.flush();
 
         //then
+        assertThat(findMember.getUsername()).isEqualTo("memberB");
     }
 
     @Test
@@ -458,6 +457,9 @@ class MemberRepositoryTest {
 
         //when
         List<Member> members = memberRepository.findLockByUsername("memberA");
+
+        //then
+
 
     }
 
