@@ -458,9 +458,6 @@ class MemberRepositoryTest {
         //when
         List<Member> members = memberRepository.findLockByUsername("memberA");
 
-        //then
-
-
     }
 
 }
