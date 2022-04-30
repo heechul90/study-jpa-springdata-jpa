@@ -516,4 +516,52 @@ class MemberRepositoryTest {
         assertThat(result.get(0).getUsername()).isEqualTo("m1");
     }
 
+    @Test
+    void projections() {
+        //given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member m1 = new Member("m1", 0, teamA);
+        Member m2 = new Member("m2", 0, teamA);
+        em.persist(m1);
+        em.persist(m2);
+
+        em.flush();
+        em.clear();
+
+        //when
+        List<UsernameOnly> result = memberRepository.findProjectionsByUsername("m1");
+
+        //then
+        for (UsernameOnly username : result) {
+            System.out.println("username = " + username);
+        }
+    }
+
+    @Test
+    void projections2() {
+        //given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member m1 = new Member("m1", 0, teamA);
+        Member m2 = new Member("m2", 0, teamA);
+        em.persist(m1);
+        em.persist(m2);
+
+        em.flush();
+        em.clear();
+
+        //when
+        List<NestedCloseProjections> resultList = memberRepository.findProjectionsDtoByUsername("m1", NestedCloseProjections.class);
+
+        //then
+        for (NestedCloseProjections result : resultList) {
+            System.out.println("username = " + result.getUsername());
+        }
+    }
+
+
+
 }
