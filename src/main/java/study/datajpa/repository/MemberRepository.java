@@ -14,10 +14,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom{
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom, JpaSpecificationExecutor<Member> {
 
     /**
      * where name = name and age > age
+     *
      * @return
      */
     List<Member> findByUsernameAndAgeGreaterThan(String username, int age);
@@ -29,6 +30,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
 
     /**
      * 네임드쿼리 조회
+     *
      * @Query 생량 가능
      * Member entity에서 메서드명 findByUsernameNamedQuery 쿼리를 먼저 찾고 없으면 쿼리 이름으로 쿼리 생성한다.
      */
