@@ -52,3 +52,5 @@
     - 네이티브 쿼리
     
 [[이전으로]](https://github.com/heechul90/study-jpa-jpashop) [[다음으로]](https://github.com/heechul90/study-jpa-querydsl)
+
+[[복습하기/적용하기]](https://github.com/heechul90/project-hellcoding)
